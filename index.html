@@ -10,31 +10,29 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,245,160,.06) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 80% 80%,rgba(0,217,245,.05) 0%,transparent 70%);pointer-events:none}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 28px;width:100%;max-width:380px;position:relative;overflow:hidden}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 28px;width:100%;max-width:380px;position:relative}
   .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.5}
-  h1{font-size:26px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+  h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
   .subtitle{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:28px}
   .field-group{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
   label{font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;display:block}
   input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:12px 14px;outline:none;transition:border-color .2s}
   input:focus{border-color:var(--accent)}
-  .btn{width:100%;padding:14px;border-radius:12px;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;letter-spacing:.5px;cursor:pointer;transition:all .2s}
+  .btn{width:100%;padding:14px;border-radius:12px;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;margin-top:8px}
   .btn-connect{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a0f}
   .btn-connect:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,245,160,.25)}
   .btn-disconnect{background:transparent;border:1px solid var(--danger);color:var(--danger)}
-  .btn-mute{background:transparent;border:1px solid var(--border);color:var(--text);margin-top:10px}
+  .btn-mute{background:transparent;border:1px solid var(--border);color:var(--text)}
   .btn-mute.muted{border-color:var(--danger);color:var(--danger)}
-  .status-bar{display:none;gap:10px;margin:20px 0}
-  .status-pill{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center}
-  .status-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);margin:0 auto 4px;transition:background .3s}
-  .status-pill.connected .dot{background:var(--accent);box-shadow:0 0 8px var(--accent)}
-  .status-pill .label{font-size:10px;color:var(--muted);letter-spacing:.5px}
-  .visualizer{width:100%;height:60px;margin:16px 0;display:none;align-items:center;justify-content:center;gap:3px}
-  .visualizer.active{display:flex}
+  .status-row{display:flex;align-items:center;gap:10px;margin:16px 0;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
+  .dot.green{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .dot.red{background:var(--danger)}
+  .status-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted)}
+  .visualizer{width:100%;height:50px;display:flex;align-items:center;justify-content:center;gap:3px;margin:10px 0}
   .bar{width:4px;border-radius:2px;background:var(--accent);height:4px;transition:height .05s}
-  .log-box{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);max-height:100px;overflow-y:auto;margin-top:16px;display:none}
-  .log-box.visible{display:block}
-  .log-entry{line-height:1.6}
+  .log-box{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);max-height:120px;overflow-y:auto;margin-top:12px}
+  .log-entry{line-height:1.8}
   .log-entry.ok{color:var(--accent)}
   .log-entry.err{color:var(--danger)}
   .hidden{display:none!important}
@@ -44,72 +42,179 @@
 <div class="card">
   <h1>Audio Link</h1>
   <p class="subtitle">TWO-WAY VOICE BRIDGE</p>
+
+  <!-- Setup -->
   <div id="setup-view">
     <div class="field-group">
-      <div><label>Server URL</label><input id="serverUrl" type="text" placeholder="wss://your-app.onrender.com"></div>
+      <div><label>Server URL</label><input id="serverUrl" type="text" placeholder="wss://voice-vcfq.onrender.com" value="wss://voice-vcfq.onrender.com"></div>
       <div><label>Room ID</label><input id="roomId" type="text" placeholder="room1" value="room1"></div>
     </div>
-    <button class="btn btn-connect" onclick="connect()">Connect &amp; Start</button>
+    <button class="btn btn-connect" onclick="connect()">🎤 Connect & Start</button>
   </div>
+
+  <!-- Live -->
   <div id="live-view" class="hidden">
-    <div class="status-bar" id="statusBar">
-      <div class="status-pill" id="pill-web"><div class="dot"></div><div class="label">MOBILE</div></div>
-      <div class="status-pill" id="pill-python"><div class="dot"></div><div class="label">PYTHON</div></div>
+    <div class="status-row">
+      <div class="dot" id="statusDot"></div>
+      <div class="status-text" id="statusText">Connecting...</div>
     </div>
+
     <div class="visualizer" id="visualizer"></div>
-    <button class="btn btn-mute" id="muteBtn" onclick="toggleMute()">Mic ON</button>
-    <button class="btn btn-disconnect" style="margin-top:10px" onclick="disconnect()">Disconnect</button>
+
+    <button class="btn btn-mute" id="muteBtn" onclick="toggleMute()">🎤 Mic ON — tap to mute</button>
+    <button class="btn btn-disconnect" onclick="disconnect()">Disconnect</button>
   </div>
+
   <div class="log-box" id="logBox"></div>
 </div>
+
 <script>
-let ws,audioContext,processor,mediaStream,isMuted=false,audioQueue=[],isPlaying=false;
-const SR=16000;
-const viz=document.getElementById('visualizer');
-for(let i=0;i<24;i++){const b=document.createElement('div');b.className='bar';b.id='bar-'+i;viz.appendChild(b);}
-function log(m,t=''){const box=document.getElementById('logBox');box.classList.add('visible');const d=document.createElement('div');d.className='log-entry '+t;d.textContent='['+new Date().toLocaleTimeString()+'] '+m;box.appendChild(d);box.scrollTop=box.scrollHeight;}
-async function connect(){
-  const url=document.getElementById('serverUrl').value.trim();
-  const room=document.getElementById('roomId').value.trim()||'room1';
-  if(!url){alert('Enter server URL');return;}
-  try{
-    log('Requesting microphone...');
-    mediaStream=await navigator.mediaDevices.getUserMedia({audio:{sampleRate:SR,channelCount:1,echoCancellation:true,noiseSuppression:true}});
-    audioContext=new(window.AudioContext||window.webkitAudioContext)({sampleRate:SR});
-    log('Connecting to '+url);
-    ws=new WebSocket(url);ws.binaryType='arraybuffer';
-    ws.onopen=()=>{ws.send(JSON.stringify({type:'web',room}));log('Connected! Room: '+room,'ok');document.getElementById('setup-view').classList.add('hidden');document.getElementById('live-view').classList.remove('hidden');document.getElementById('statusBar').style.display='flex';document.getElementById('pill-web').classList.add('connected');startMic();};
-    ws.onmessage=async(e)=>{if(typeof e.data==='string'){const m=JSON.parse(e.data);if(m.type==='status'){document.getElementById('pill-python').classList.toggle('connected',m.python_connected);document.getElementById('pill-web').classList.toggle('connected',m.web_connected);if(m.both_ready)log('Python connected — LIVE!','ok');}}else{playAudio(e.data);}};
-    ws.onclose=()=>{log('Disconnected','err');resetUI();};
-    ws.onerror=()=>log('Connection error','err');
-  }catch(err){log('Error: '+err.message,'err');}
+// Build visualizer bars
+const viz = document.getElementById('visualizer');
+for(let i = 0; i < 24; i++){
+  const b = document.createElement('div');
+  b.className = 'bar'; b.id = 'bar-'+i; viz.appendChild(b);
 }
+
+let ws, audioContext, processor, mediaStream;
+let isMuted = false;
+let nextPlayTime = 0;
+const SR = 16000;
+
+function log(m, t=''){
+  const box = document.getElementById('logBox');
+  const d = document.createElement('div');
+  d.className = 'log-entry ' + t;
+  d.textContent = '['+new Date().toLocaleTimeString()+'] '+m;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+function setStatus(msg, color){
+  document.getElementById('statusText').textContent = msg;
+  const dot = document.getElementById('statusDot');
+  dot.className = 'dot ' + (color || '');
+}
+
+async function connect(){
+  const url = document.getElementById('serverUrl').value.trim();
+  const room = document.getElementById('roomId').value.trim() || 'room1';
+  if(!url){ alert('Enter server URL'); return; }
+
+  try {
+    log('Requesting microphone...');
+    mediaStream = await navigator.mediaDevices.getUserMedia({
+      audio: { sampleRate: SR, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+    });
+
+    // Must resume AudioContext after user gesture
+    audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SR });
+    if(audioContext.state === 'suspended') await audioContext.resume();
+    nextPlayTime = audioContext.currentTime;
+
+    log('Connecting to server...');
+    ws = new WebSocket(url);
+    ws.binaryType = 'arraybuffer';
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: 'web', room }));
+      log('Connected! Room: ' + room, 'ok');
+      document.getElementById('setup-view').classList.add('hidden');
+      document.getElementById('live-view').classList.remove('hidden');
+      setStatus('Waiting for 2nd device...', '');
+      startMic();
+    };
+
+    ws.onmessage = async (e) => {
+      if(typeof e.data === 'string'){
+        const msg = JSON.parse(e.data);
+        if(msg.type === 'status'){
+          if(msg.both_ready){
+            setStatus('🔴 LIVE — ' + msg.count + ' connected', 'green');
+            log('Both devices connected — speak now!', 'ok');
+          } else {
+            setStatus('Waiting for 2nd device (' + msg.count + '/2)', '');
+          }
+        }
+      } else {
+        // ← THIS IS THE SPEAKER OUTPUT — play received audio
+        playPCM(e.data);
+      }
+    };
+
+    ws.onclose = () => { log('Disconnected', 'err'); setStatus('Disconnected', 'red'); resetUI(); };
+    ws.onerror = () => { log('Connection error', 'err'); setStatus('Error', 'red'); };
+
+  } catch(err){
+    log('Error: ' + err.message, 'err');
+  }
+}
+
 function startMic(){
-  const src=audioContext.createMediaStreamSource(mediaStream);
-  processor=audioContext.createScriptProcessor(1024,1,1);
-  let bi=0;
-  processor.onaudioprocess=(e)=>{
-    if(isMuted||!ws||ws.readyState!==1)return;
-    const inp=e.inputBuffer.getChannelData(0);
-    const vol=Math.sqrt(inp.reduce((s,v)=>s+v*v,0)/inp.length);
-    bi=(bi+1)%24;const bar=document.getElementById('bar-'+bi);if(bar)bar.style.height=Math.min(50,4+vol*400)+'px';
-    const i16=new Int16Array(inp.length);for(let i=0;i<inp.length;i++)i16[i]=Math.max(-32768,Math.min(32767,inp[i]*32768));
+  const source = audioContext.createMediaStreamSource(mediaStream);
+  processor = audioContext.createScriptProcessor(2048, 1, 1);
+  let bi = 0;
+
+  processor.onaudioprocess = (e) => {
+    if(isMuted || !ws || ws.readyState !== 1) return;
+    const inp = e.inputBuffer.getChannelData(0);
+
+    // Animate visualizer
+    const vol = Math.sqrt(inp.reduce((s,v) => s+v*v, 0) / inp.length);
+    bi = (bi+1) % 24;
+    const bar = document.getElementById('bar-'+bi);
+    if(bar) bar.style.height = Math.min(44, 4 + vol * 500) + 'px';
+
+    // Convert float32 → int16 PCM and send
+    const i16 = new Int16Array(inp.length);
+    for(let i = 0; i < inp.length; i++)
+      i16[i] = Math.max(-32768, Math.min(32767, inp[i] * 32768));
     ws.send(i16.buffer);
   };
-  src.connect(processor);processor.connect(audioContext.destination);
-  document.getElementById('visualizer').classList.add('active');
+
+  source.connect(processor);
+  processor.connect(audioContext.destination);
 }
-async function playAudio(buf){audioQueue.push(buf);if(!isPlaying)processQueue();}
-async function processQueue(){
-  if(!audioQueue.length){isPlaying=false;return;}isPlaying=true;
-  const buf=audioQueue.shift();const i16=new Int16Array(buf);const f32=new Float32Array(i16.length);
-  for(let i=0;i<i16.length;i++)f32[i]=i16[i]/32768;
-  const ab=audioContext.createBuffer(1,f32.length,SR);ab.copyToChannel(f32,0);
-  const s=audioContext.createBufferSource();s.buffer=ab;s.connect(audioContext.destination);s.onended=processQueue;s.start();
+
+function playPCM(arrayBuffer){
+  // Convert int16 PCM → float32 and schedule for smooth playback
+  const i16 = new Int16Array(arrayBuffer);
+  const f32 = new Float32Array(i16.length);
+  for(let i = 0; i < i16.length; i++) f32[i] = i16[i] / 32768;
+
+  const buf = audioContext.createBuffer(1, f32.length, SR);
+  buf.copyToChannel(f32, 0);
+
+  const src = audioContext.createBufferSource();
+  src.buffer = buf;
+  src.connect(audioContext.destination);
+
+  // Schedule playback — queue chunks back-to-back for smooth audio
+  const now = audioContext.currentTime;
+  if(nextPlayTime < now) nextPlayTime = now + 0.05; // small buffer
+  src.start(nextPlayTime);
+  nextPlayTime += buf.duration;
 }
-function toggleMute(){isMuted=!isMuted;const b=document.getElementById('muteBtn');b.textContent=isMuted?'Mic MUTED':'Mic ON';b.classList.toggle('muted',isMuted);}
-function disconnect(){if(ws)ws.close();if(processor)processor.disconnect();if(mediaStream)mediaStream.getTracks().forEach(t=>t.stop());if(audioContext)audioContext.close();resetUI();}
-function resetUI(){document.getElementById('setup-view').classList.remove('hidden');document.getElementById('live-view').classList.add('hidden');document.getElementById('visualizer').classList.remove('active');}
+
+function toggleMute(){
+  isMuted = !isMuted;
+  const btn = document.getElementById('muteBtn');
+  btn.textContent = isMuted ? '🔇 Mic MUTED — tap to unmute' : '🎤 Mic ON — tap to mute';
+  btn.classList.toggle('muted', isMuted);
+}
+
+function disconnect(){
+  if(ws) ws.close();
+  if(processor) processor.disconnect();
+  if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+  if(audioContext) audioContext.close();
+  resetUI();
+}
+
+function resetUI(){
+  document.getElementById('setup-view').classList.remove('hidden');
+  document.getElementById('live-view').classList.add('hidden');
+}
 </script>
 </body>
 </html>
